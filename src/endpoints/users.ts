@@ -56,7 +56,7 @@ export class UsersEndpoint extends AbstractEndpoint {
 
     /**
      * This endpoint is used to get a user in the system. The user is identified by the userId parameter, previously
-     * provided by the CheshireCat API when the user was created. The endpoint returns the username and the permissions
+     * provided by the Grinning Cat API when the user was created. The endpoint returns the username and the permissions
      * of the user. The permissions are used to define the access rights of the user in the system and are defined by
      * the system administrator.
      *
@@ -71,7 +71,7 @@ export class UsersEndpoint extends AbstractEndpoint {
 
     /**
      * The endpoint is used to update the user in the system. The user is identified by the userId parameter, previously
-     * provided by the CheshireCat API when the user was created. The endpoint updates the username, the password, and
+     * provided by the Grinning Cat API when the user was created. The endpoint updates the username, the password, and
      * the permissions of the user. The permissions are used to define the access rights of the user in the system and
      * are defined by the system administrator.
      *
@@ -104,7 +104,7 @@ export class UsersEndpoint extends AbstractEndpoint {
 
     /**
      * This endpoint is used to delete the user in the system. The user is identified by the userId parameter,
-     * previously provided by the CheshireCat API when the user was created.
+     * previously provided by the Grinning Cat API when the user was created.
      *
      * @param userId The ID of the user.
      * @param agentId The ID of the agent.

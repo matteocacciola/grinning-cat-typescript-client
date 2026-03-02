@@ -1,6 +1,6 @@
 {
-  "name": "cheshirecat-typescript-client",
-  "version": "1.8.5",
+  "name": "grinning-cat-typescript-client",
+  "version": "1.0.0",
   "engines": {
     "node": "22.x"
   },
@@ -19,7 +19,7 @@
   "keywords": [],
   "author": "Matteo Cacciola <matteo.cacciola@gmail.com>",
   "license": "GPL-3.0-only",
-  "description": "Typescript Client for the CheshireCat API",
+  "description": "Typescript Client for the Grinning Cat API",
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "@types/websocket": "^1.0.10",

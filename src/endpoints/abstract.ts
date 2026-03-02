@@ -1,13 +1,13 @@
-import {CheshireCatClient} from "../client";
+import {GrinningCatClient} from "../client";
 import {WebSocketClient} from "../clients/wsclient";
 import {AxiosInstance} from "axios";
 
 export abstract class AbstractEndpoint {
-    protected client: CheshireCatClient;
+    protected client: GrinningCatClient;
     protected prefix: string;
     protected systemId: string = "system";
 
-    constructor(client: CheshireCatClient) {
+    constructor(client: GrinningCatClient) {
         this.client = client;
     }
 

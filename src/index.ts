@@ -1,4 +1,4 @@
-export {CheshireCatClient} from "./client";
+export {GrinningCatClient} from "./client";
 export {HttpClient} from "./clients/httpclient";
 export {WSClient} from "./clients/wsclient";
 

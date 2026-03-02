@@ -82,7 +82,7 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
      * - In browser: Pass a File object as `fileSource`
      *
      * The file is uploaded to the RabbitHole server and processed asynchronously.
-     * The CheshireCat processes the injection in the background, and the client will be informed when processing
+     * The Grinning Cat processes the injection in the background, and the client will be informed when processing
      * completes.
      *
      * @param fileSource The source of the file to upload:
@@ -143,7 +143,7 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
      *
      * The files are then processed by the RAG system, and the results are stored in the RAG database. The files are
      * processed in a batch. The process is asynchronous.
-     * The CheshireCat processes the injection in the background, and the client will be informed at the end of the
+     * The Grinning Cat processes the injection in the background, and the client will be informed at the end of the
      * process.
      *
      * @param fileSources The sources of the file to upload:
@@ -197,7 +197,7 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
      * This method posts a web URL to the RabbitHole API. The web URL is ingested into the RAG system. The web URL is
      * processed by the RAG system by Web scraping, and the results are stored in the RAG database. The process is
      * asynchronous.
-     * The CheshireCat processes the injection in the background, and the client will be informed at the end of the
+     * The Grinning Cat processes the injection in the background, and the client will be informed at the end of the
      * process.
      *
      * @param webUrl The URL of the web page to be ingested.
@@ -230,7 +230,7 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
     /**
      * This method posts a memory point. The memory point is ingested into the RAG system. The process is asynchronous.
      * The provided file must be in JSON format.
-     * The CheshireCat processes the injection in the background, and the client will be informed at the end of the
+     * The Grinning Cat processes the injection in the background, and the client will be informed at the end of the
      * process.
      *
      * @param fileSource The source of the file to upload:

@@ -24,7 +24,7 @@ import {VectorDatabaseEndpoint} from "./endpoints/vectorDatabase";
 import {HealthCheckEndpoint} from "./endpoints/healthCheck";
 import {AgenticWorkflowEndpoint} from "./endpoints/agenticWorkflow";
 
-export class CheshireCatClient implements Endpoints {
+export class GrinningCatClient implements Endpoints {
     private readonly wsClient: WSClient;
     private readonly httpClient: HttpClient;
     private readonly serializer: Serializer;
@@ -135,9 +135,9 @@ export class CheshireCatClient implements Endpoints {
 
     /**
      * Closes the WebSocket connection.
-     * @returns The `CheshireCatClient` instance.
+     * @returns The `GrinningCatClient` instance.
      */
-    close(agentId: string, userId: string): CheshireCatClient {
+    close(agentId: string, userId: string): GrinningCatClient {
         this.wsClient.getClient(agentId, userId).close();
         return this;
     }
@@ -147,9 +147,9 @@ export class CheshireCatClient implements Endpoints {
      * @param handler The function to call
      * @param agentId The agent ID to connect to
      * @param userId The user ID to connect to
-     * @returns The current `CheshireCatClient` class instance
+     * @returns The current `GrinningCatClient` class instance
      */
-    onConnected(handler: () => void, agentId: string, userId: string): CheshireCatClient {
+    onConnected(handler: () => void, agentId: string, userId: string): GrinningCatClient {
         const wsClient = this.wsClient.getClient(agentId, userId);
         wsClient.on("open", () => {
             handler();
@@ -162,9 +162,9 @@ export class CheshireCatClient implements Endpoints {
      * @param handler The function to call
      * @param agentId The agent ID to connect to
      * @param userId The user ID to connect to
-     * @returns The current `CheshireCatClient` class instance
+     * @returns The current `GrinningCatClient` class instance
      */
-    onDisconnected(handler: () => void, agentId: string, userId: string): CheshireCatClient {
+    onDisconnected(handler: () => void, agentId: string, userId: string): GrinningCatClient {
         const wsClient = this.wsClient.getClient(agentId, userId);
         wsClient.on("close", () => {
             handler();
@@ -177,9 +177,9 @@ export class CheshireCatClient implements Endpoints {
      * @param handler The function to call
      * @param agentId The agent ID to connect to
      * @param userId The user ID to connect to
-     * @returns The current `CheshireCatClient` class instance
+     * @returns The current `GrinningCatClient` class instance
      */
-    onMessage(handler: (data: SocketResponse) => void, agentId: string, userId: string): CheshireCatClient {
+    onMessage(handler: (data: SocketResponse) => void, agentId: string, userId: string): GrinningCatClient {
         const wsClient = this.wsClient.getClient(agentId, userId);
         wsClient.on("message", (data: SocketResponse) => {
             handler(data);
@@ -192,13 +192,13 @@ export class CheshireCatClient implements Endpoints {
      * @param handler The function to call
      * @param agentId The agent ID to connect to
      * @param userId The user ID to connect to
-     * @returns The current `CheshireCatClient` class instance
+     * @returns The current `GrinningCatClient` class instance
      */
     onError(
         handler: (error: SocketError, event?: WebSocket.ErrorEvent) => void,
         agentId: string,
         userId: string,
-    ): CheshireCatClient {
+    ): GrinningCatClient {
         const wsClient = this.wsClient.getClient(agentId, userId);
         wsClient.on("error", (error: SocketError, event?: WebSocket.ErrorEvent) => {
             handler(error, event);

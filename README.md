@@ -1,49 +1,49 @@
-# CheshireCat Typescript Client
+# Grinning Cat Typescript Client
 
 ----
 
-**CheshireCat Typescript Client** is a library to help the implementation
-of [Cheshire Cat](https://github.com/matteocacciola/cheshirecat-core) on a Javascript / Typescript (e.g. Node.js, React.js, Vue.js) Project
+**Grinning Cat Typescript Client** is a library to help the implementation
+of [Grinning Cat](https://github.com/matteocacciola/grinning-cat-core) on a JavaScript / TypeScript (e.g. Node.js, React.js, Vue.js) Project
 
 * [Installation](#installation)
 * [Usage](#usage)
 
 ## Installation
 
-To install CheshireCat Typescript Client, run:
+To install Grinning Cat Typescript Client, run:
 
 ```bash
-npm install cheshirecat-typescript-client
+npm install grinning-cat-typescript-client
 ```
 
 or, if you are using yarn:
 
 ```bash
-yarn add cheshirecat-typescript-client
+yarn add grinning-cat-typescript-client
 ```
 
 ## Usage
 Initialization and usage:
 
 ```javascript
-import { CheshireCatClient, HttpClient, WSClient } from 'cheshirecat-typescript-client';
+import { GrinningCatClient, HttpClient, WSClient } from 'grinning-cat-typescript-client';
 
-const cheshireCatClient = new CheshireCatClient(
-    new WSClient('cheshire_cat_core', 1865, null),
-    new HttpClient('cheshire_cat_core', 1865, null)
+const catClient = new GrinningCatClient(
+    new WSClient('grinning_cat_core', 1865, null),
+    new HttpClient('grinning_cat_core', 1865, null)
 );
 ```
 Send a message to the websocket:
 
 ```javascript
-import { Message } from 'cheshirecat-typescript-client';
+import { Message } from 'grinning-cat-typescript-client';
 
 const notificationClosure = (message: string) => {
  // handle websocket notification, like chat token stream
 }
 
 // result is the result of the message
-const result = cheshireCatClient.message().sendWebsocketMessage(
+const result = catClient.message().sendWebsocketMessage(
     new Message("Hello world!"),  // message body
     "agent", // agent name
     "user", // user name
@@ -55,18 +55,18 @@ const result = cheshireCatClient.message().sendWebsocketMessage(
 Load data to the rabbit hole:
 ```javascript
 //file
-const result = await cheshireCatClient.rabbitHole().postFile(file, "agent");
+const result = await catClient.rabbitHole().postFile(file, "agent");
 
 //url
-const result = await cheshireCatClient.rabbitHole().postWeb(url, "agent");
+const result = await catClient.rabbitHole().postWeb(url, "agent");
 ```
 
 Memory management utilities:
 
 ```javascript
-cheshireCatClient.memory().getMemoryCollections("agent"); // get number of vectors in the working memory
-cheshireCatClient.memory().getMemoryRecall("HELLO", "agent", "user"); // recall memories by text
+catClient.memory().getMemoryCollections("agent"); // get number of vectors in the working memory
+catClient.memory().getMemoryRecall("HELLO", "agent", "user"); // recall memories by text
 
 //delete memory points by metadata, like this example delete by source
-cheshireCatClient.memory().deleteMemoryPointsByMetadata("declarative", "agent", {"source": url});
+catClient.memory().deleteMemoryPointsByMetadata("declarative", "agent", {"source": url});
 ```
