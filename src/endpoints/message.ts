@@ -45,7 +45,7 @@ export class MessageEndpoint extends AbstractEndpoint {
         agentId: string,
         userId: string,
         chatId?: string | null,
-        closure?: (content: string) => void | null
+        closure?: (content: Record<string, unknown>) => void | null
     ): Promise<ChatOutput> {
         const json = JSON.stringify(message.toJSON());
         if (!json) {
@@ -62,16 +62,29 @@ export class MessageEndpoint extends AbstractEndpoint {
             client.on("message", (data: SocketRequest) => {
                 const content = data.toString();
 
-                // Handle non-chat messages
-                if (!content.includes('"type":"chat"')) {
-                    if (closure) closure(content);
+                if (content === "ping") {
+                    client.send("pong");
+                    return;
+                }
+                if (content === "pong") return;
+
+                let parsed: Record<string, unknown>;
+                try {
+                    parsed = JSON.parse(content);
+                } catch {
+                    reject(new Error("Error parsing message: " + content));
                     return;
                 }
 
+                if (parsed.type !== "chat") {
+                    closure?.(parsed);
+                    return;
+                }
+
+                client.removeAllListeners(); // prevent close from rejecting after success
                 client.close();
                 try {
-                    const messageOutput = this.deserialize<ChatOutput>(content);
-                    resolve(messageOutput);
+                    resolve(this.deserialize<ChatOutput>(parsed.content as string));
                 } catch (error) {
                     reject(new Error("Error deserializing message: " + error));
                 }
