@@ -1,9 +1,6 @@
-import { readFile } from "fs/promises";
-import FormData from "form-data";
-import path from "path";
-import * as mime from "mime-types";
 import {AbstractEndpoint} from "./abstract";
 import {PluginCollectionOutput, PluginToggleOutput} from "../models/api/plugins";
+import {FileSource, readFile} from "../utils/file-reader"; // File | Blob | string
 
 export class AdminsEndpoint extends AbstractEndpoint {
     protected prefix = "/plugins";
@@ -31,27 +28,36 @@ export class AdminsEndpoint extends AbstractEndpoint {
     /**
      * This endpoint installs a plugin from a ZIP file.
      *
-     * @param pathZip The path to the ZIP file.
+     * @param fileSource In Node.js: path string to the ZIP file. In browser: File or Blob object.
      *
      * @returns The output of the plugin installation.
      */
-    async postInstallPluginFromZip(pathZip: string): Promise<PluginCollectionOutput> {
+    async postInstallPluginFromZip(fileSource: FileSource): Promise<PluginCollectionOutput> {
+        const fileData = await readFile(fileSource);
+
         const form = new FormData();
 
-        const fileBuffer = await readFile(pathZip);
-        form.append("file", fileBuffer, {
-            filename: path.basename(pathZip),
-            contentType: mime.contentType(pathZip) || "application/octet-stream"
-        });
+        let filename = "plugin.zip";
+        let contentType = "application/octet-stream";
+
+        if (typeof fileSource === "string") {
+            filename = fileSource.split("/").pop() ?? "plugin.zip";
+            const ext = filename.split(".").pop() ?? "";
+            contentType = ext === "zip" ? "application/zip" : "application/octet-stream";
+        } else if (fileSource instanceof File) {
+            filename = fileSource.name;
+            contentType = fileSource.type || "application/octet-stream";
+        }
+
+        const arrayBuffer = Buffer.isBuffer(fileData)
+            ? fileData.buffer.slice(fileData.byteOffset, fileData.byteOffset + fileData.byteLength) as ArrayBuffer
+            : await (fileData as Blob).arrayBuffer();
+
+        form.append("file", new Blob([new Uint8Array(arrayBuffer)], { type: contentType }), filename);
 
         const endpoint = this.formatUrl("/install/upload");
 
-        const response = await this.getHttpClient(this.systemId).post(endpoint, form, {
-            headers: {
-                ...form.getHeaders(),
-                'Content-Type': `multipart/form-data; boundary=${form.getBoundary()}`
-            },
-        });
+        const response = await this.getHttpClient(this.systemId).post(endpoint, form);
         if (response.status !== 200) {
             throw new Error(`Failed to post data to ${endpoint}: ${response.statusText}`);
         }

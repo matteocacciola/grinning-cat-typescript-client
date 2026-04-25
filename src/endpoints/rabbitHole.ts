@@ -6,71 +6,48 @@
  * file uploads to the RabbitHole API with environment-specific file handling.
  */
 import {AbstractEndpoint} from "./abstract";
-import FormData from "form-data";
 import {isNodeEnvironment} from "../utils/environment";
 import {FileSource, readFile, getFileName, getFileMimeType} from "../utils/file-reader";
-import {createFormData} from "../utils/form-data";
 import {AllowedMimeTypesOutput} from "../models/api/rabbitholes";
 
 export class RabbitHoleEndpoint extends AbstractEndpoint {
     protected prefix = "/rabbithole";
 
-    private throwError(fileSource: FileSource, error: any)  {
+    private throwError(fileSource: FileSource, error: any) {
         // Provide more helpful error messages based on environment
         if (!isNodeEnvironment() && typeof fileSource === "string") {
             throw new Error("In browser environments, fileSource must be a File object, not a file path string.");
-        } else if (isNodeEnvironment() && typeof fileSource !== 'string') {
+        } else if (isNodeEnvironment() && typeof fileSource !== "string") {
             throw new Error("In Node.js environments, fileSource must be a file path string.");
         }
-
-        // Re-throw the original error
         throw error;
     }
 
     private async appendFileToForm(
-        form: FormData | globalThis.FormData,
+        form: globalThis.FormData,
         fileSource: FileSource,
         formKey: string,
         fileName?: string | null
     ) {
-        // Read file content in an environment-appropriate way
-        const fileBuffer = await readFile(fileSource);
-
-        // Get appropriate filename
+        const fileData = await readFile(fileSource);
         const finalFileName = fileName || await getFileName(fileSource);
         const fileMimeType = await getFileMimeType(fileSource, finalFileName);
 
-        if (isNodeEnvironment()) {
-            (form as FormData).append(formKey, fileBuffer, {
-                filename: finalFileName,
-                contentType: fileMimeType
-            });
+        const arrayBuffer = Buffer.isBuffer(fileData)
+            ? fileData.buffer.slice(fileData.byteOffset, fileData.byteOffset + fileData.byteLength) as ArrayBuffer
+            : await (fileData as Blob).arrayBuffer();
 
-            return;
-        }
-
-        const blob = new Blob([fileBuffer], { type: fileMimeType });
-        (form as globalThis.FormData).append(formKey, blob, finalFileName);
+        form.append(formKey, new Blob([new Uint8Array(arrayBuffer)], { type: fileMimeType }), finalFileName);
     }
 
-    private appendQueryDataToForm(
-        form: FormData | globalThis.FormData,
-        metadata?: Record<string, any> | null
-    ) {
+    private appendQueryDataToForm(form: globalThis.FormData, metadata?: Record<string, any> | null) {
         if (metadata) {
             form.append("metadata", JSON.stringify(metadata));
         }
     }
 
-    private async submitForm(form: FormData | globalThis.FormData, url: string, agentId: string) {
-        const headers = isNodeEnvironment()
-            ? { ...(form as FormData).getHeaders() }
-            : {};
-
-        const response = await this.getHttpClient(agentId).post(url, form, {
-            headers
-        });
-
+    private async submitForm(form: globalThis.FormData, url: string, agentId: string) {
+        const response = await this.getHttpClient(agentId).post(url, form);
         return response.data;
     }
 
@@ -118,8 +95,7 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
         fileName?: string | null,
         metadata?: Record<string, any> | null,
     ): Promise<any> {
-        const form = createFormData();
-
+        const form = new globalThis.FormData();
         const endpoint = chatId ? this.formatUrl(`/${chatId}`) : this.prefix;
 
         try {
@@ -129,7 +105,7 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
             // Send the request
             return await this.submitForm(form, endpoint, agentId);
         } catch (error) {
-            this.throwError(fileSource, error)
+            this.throwError(fileSource, error);
         }
     }
 
@@ -175,21 +151,19 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
         chatId?: string | null,
         metadata?: Record<string, any> | null,
     ): Promise<any> {
-        const form = new FormData();
+        const form = new globalThis.FormData();
 
         const endpoint = chatId ? this.formatUrl(`/batch/${chatId}`) : this.formatUrl("/batch");
 
         try {
-            await Promise.all(fileSources.map(async (fileSource) => {
-                await this.appendFileToForm(form, fileSource, "files");
-            }));
+            await Promise.all(fileSources.map(fileSource => this.appendFileToForm(form, fileSource, "files")));
 
             // Append additional query parameters
             this.appendQueryDataToForm(form, metadata);
 
             return await this.submitForm(form, endpoint, agentId);
         } catch (error) {
-            this.throwError(fileSources[0], error)
+            this.throwError(fileSources[0], error);
         }
     }
 
@@ -260,14 +234,14 @@ export class RabbitHoleEndpoint extends AbstractEndpoint {
         agentId: string,
         fileName?: string | null,
     ): Promise<any> {
-        const form = new FormData();
+        const form = new globalThis.FormData();
 
         try {
             await this.appendFileToForm(form, fileSource, "file", fileName);
 
             return this.submitForm(form, this.formatUrl("/memory"), agentId);
         } catch (error) {
-            this.throwError(fileSource, error)
+            this.throwError(fileSource, error);
         }
     }
 

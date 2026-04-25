@@ -32,8 +32,8 @@ export async function readFile(fileSource: FileSource): Promise<Buffer | Blob> {
 
         try {
             // Dynamic import to avoid bundling issues in browser
-            const fs = await import("fs");
-            return fs.readFileSync(fileSource);
+            const { readFile } = await import("fs/promises");
+            return await readFile(fileSource);
         } catch (error: any) {
             throw new Error(`Failed to read file at path ${fileSource}: ${error.message}`);
         }

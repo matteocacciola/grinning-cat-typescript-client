@@ -134,15 +134,6 @@ export class GrinningCatClient implements Endpoints {
     }
 
     /**
-     * Closes the WebSocket connection.
-     * @returns The `GrinningCatClient` instance.
-     */
-    close(agentId: string, userId: string): GrinningCatClient {
-        this.wsClient.getClient(agentId, userId).close();
-        return this;
-    }
-
-    /**
      * Calls the handler when the WebSocket is connected
      * @param handler The function to call
      * @param agentId The agent ID to connect to

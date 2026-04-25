@@ -41,6 +41,13 @@ export class WSClient {
         return this.wsClient;
     }
 
+    public close() {
+        if (this.wsClient) {
+            this.wsClient.close();
+            this.wsClient = undefined;
+        }
+    }
+
     public getWsUri(agentId: string, userId: string, chatId?: string | null): Uri {
         const query: Record<string, string> = {};
         query["user_id"] = userId;
@@ -97,6 +104,10 @@ export class WebSocketClient extends EventEmitter {
         this.ws = this.connect(url, headers);
         this.setupPingPong();
         this.setupEventHandlers();
+    }
+
+    public isOpen(): boolean {
+        return this.ws.readyState === WebSocket.OPEN;
     }
 
     public on<K extends keyof WebSocketClientEvents>(

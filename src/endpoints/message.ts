@@ -1,7 +1,7 @@
 import {AbstractEndpoint} from "./abstract";
 import {ChatOutput} from "../models/api/messages";
 import {Message} from "../models/dtos";
-import {SocketRequest} from "../models/socket";
+import {SocketError, SocketRequest} from "../models/socket";
 
 export class MessageEndpoint extends AbstractEndpoint {
     /**
@@ -55,24 +55,15 @@ export class MessageEndpoint extends AbstractEndpoint {
         const client = this.getWsClient(agentId, userId, chatId);
 
         return new Promise((resolve, reject) => {
-            client.on("open", () => {
-                client.send(json);
-            });
-
-            client.on("message", (data: SocketRequest) => {
+            const onMessage = (data: SocketRequest) => {
                 const content = data.toString();
-
-                if (content === "ping") {
-                    client.send("pong");
-                    return;
-                }
-                if (content === "pong") return;
 
                 let parsed: Record<string, unknown>;
                 try {
                     parsed = JSON.parse(content);
                 } catch {
                     reject(new Error("Error parsing message: " + content));
+                    cleanup();
                     return;
                 }
 
@@ -81,22 +72,42 @@ export class MessageEndpoint extends AbstractEndpoint {
                     return;
                 }
 
-                client.removeAllListeners(); // prevent close from rejecting after success
-                client.close();
+                cleanup();
                 try {
                     resolve(this.deserialize<ChatOutput>(parsed.content as string));
                 } catch (error) {
                     reject(new Error("Error deserializing message: " + error));
                 }
-            });
+            };
 
-            client.on("error", (error) => {
+            const onError = (error: SocketError) => {
+                this.client.getWsClient().close();
+                cleanup();
                 reject(new Error("WebSocket error: " + error.description));
-            });
+            };
 
-            client.on("close", () => {
-                reject(new Error("WebSocket connection closed unexpectedly"));
-            });
+            const cleanup = () => {
+                client.removeListener("message", onMessage);
+                client.removeListener("error", onError);
+            };
+
+            const sendMessage = () => {
+                try {
+                    client.send(json);
+                } catch (error) {
+                    this.client.getWsClient().close();
+                    reject(new Error("WebSocket send error: " + error));
+                }
+            };
+
+            if (client.isOpen()) {
+                sendMessage();
+            } else {
+                client.once("open", sendMessage);
+            }
+
+            client.on("message", onMessage);
+            client.on("error", onError);
         });
     }
 }
