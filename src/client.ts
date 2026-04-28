@@ -8,6 +8,7 @@ import {AdminsEndpoint} from "./endpoints/admins";
 import {AuthEndpoint} from "./endpoints/auth";
 import {AuthHandlerEndpoint} from "./endpoints/authHandler";
 import {ChunkerEndpoint} from "./endpoints/chunker";
+import {ContextRetrieverEndpoint} from "./endpoints/contextRetriever";
 import {ConversationEndpoint} from "./endpoints/conversation";
 import {CustomEndpoint} from "./endpoints/customEndpoint";
 import {EmbedderEndpoint} from "./endpoints/embedder";
@@ -79,6 +80,10 @@ export class GrinningCatClient implements Endpoints {
 
     public chunker(): ChunkerEndpoint {
         return new ChunkerEndpoint(this);
+    }
+
+    public contextRetriever(): ContextRetrieverEndpoint {
+        return new ContextRetrieverEndpoint(this);
     }
 
     public conversation(): ConversationEndpoint {

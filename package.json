@@ -1,6 +1,6 @@
 {
   "name": "grinning-cat-typescript-client",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "node": "22.x"
   },
@@ -22,11 +22,11 @@
   "description": "Typescript Client for the Grinning Cat API",
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@types/mime-types": "^2.1.4",
     "@types/websocket": "^1.0.10",
     "@types/ws": "^8.5.13",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",
-    "@types/mime-types": "^2.1.4",
     "eslint": "^9.19.0",
     "globals": "^15.14.0",
     "typescript": "^5.7.3",
@@ -37,6 +37,7 @@
     "events": "^3.3.0",
     "isomorphic-ws": "^5.0.0",
     "mime-types": "^2.1.35",
+    "twine": "^2.0.0",
     "ws": "^8.18.0"
   }
 }
